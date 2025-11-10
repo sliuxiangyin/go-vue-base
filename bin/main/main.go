@@ -1,7 +1,6 @@
 package main
 
 import (
-	"databaseAi/internal/app/tools"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"log"
@@ -10,12 +9,15 @@ import (
 func main() {
 	fib := fiber.New()
 	fib.Use(cors.New())
-	api, err := tools.NewApp(BuildEnv)
-	if err != nil {
-		return
-	}
-	api.RegisterRoutes(fib)
 
+	// 初始化 Learn English 应用
+	app, err := InitializeLearnEnService(BuildEnv)
+	if err != nil {
+		log.Fatalf("Failed to initialize Learn English service: %v", err)
+	}
+	log.Printf("Learn English service initialized successfully")
+
+	app.RegisterRoutes(fib)
 	setupProductionWeb(fib)
 
 	log.Println("Server starting on port 8080...")

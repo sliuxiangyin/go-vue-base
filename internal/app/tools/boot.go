@@ -42,12 +42,10 @@ func NewApp(buildEnv string) (*App, error) {
 		Handlers: make([]shared.HandlerInterfaces, 0),
 	}
 	// 加载配置
-	cfg := config.LoadConfig(buildEnv)
+	cfg := config.NewConfig(buildEnv)
 
-	// 根据数据库URL判断数据库类型
-	dbType := getDBType(cfg.DatabaseURL)
 	// 连接数据库
-	db, err := database2.NewDB(dbType, cfg.DatabaseURL)
+	db, err := database2.NewDB(cfg.DatabaseURL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}

@@ -2,10 +2,12 @@ package database
 
 import (
 	"fmt"
-	"github.com/glebarez/sqlite"
 	"log"
 	"os"
+	"strings"
 	"time"
+
+	"github.com/glebarez/sqlite"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -26,8 +28,22 @@ type DB struct {
 	Type DBType
 }
 
+// getDBType 根据数据库URL判断数据库类型
+func getDBType(databaseURL string) DBType {
+	if strings.HasPrefix(databaseURL, "file:") {
+		return SQLite
+	}
+	// 检查是否为MySQL连接字符串
+	if strings.Contains(databaseURL, "@tcp(") || strings.Contains(databaseURL, "@(") {
+		return MySQL
+	}
+	// 默认使用SQLite
+	return SQLite
+}
+
 // NewDB 创建新的数据库实例
-func NewDB(dbType DBType, dsn string) (*DB, error) {
+func NewDB(dsn string) (*DB, error) {
+	dbType := getDBType(dsn)
 	// 配置 GORM 日志
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer

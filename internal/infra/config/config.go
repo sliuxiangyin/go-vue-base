@@ -19,7 +19,7 @@ type Config struct {
 	OpenaiKey   string
 }
 
-func LoadConfig(buildEnv string) *Config {
+func NewConfig(buildEnv string) *Config {
 	var projectPath, _ = os.Getwd()
 
 	databaseUrl := ""
@@ -40,7 +40,7 @@ func LoadConfig(buildEnv string) *Config {
 		AppEnv:      getEnv("APP_ENV", buildEnv),
 		AppPort:     getEnv("APP_PORT", "8080"),
 		DatabaseURL: databaseUrl,
-		GrpcDNS:     getEnv("GRPC_DNS", "file:app.db?_foreign_keys=on"),
+		GrpcDNS:     getEnv("GRPC_DNS", "pkg"),
 		OpenaiURl:   getEnv("OPENAI_URL", "https://dashscope.aliyuncs.com"),
 		OpenaiKey:   getEnv("OPENAI_KEY", "sk-523cb71b9cbe475ab7e7f27cdab6d379"),
 	}

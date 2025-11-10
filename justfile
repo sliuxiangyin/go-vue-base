@@ -7,6 +7,12 @@ default:
 hello:
   echo "hello world"
 
+buf:
+    cd  bin/gen_proto && buf generate
+
+wire:
+    cd  bin/main && wire
+
 # 开发模式
 dev:
 	MODE=dev && go run main.go

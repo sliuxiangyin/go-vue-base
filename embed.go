@@ -1,9 +1,12 @@
-package backend
+//go:build !dev
+// +build !dev
+
+package databaseAi
 
 import "embed"
 
-//go:embed web/database/dist/*
-var WebDataBaseFiles embed.FS
+//go:embed web/learn_en/dist/*
+var WebLearnEnFiles embed.FS
 
 //go:embed web/admin/dist/*
 var WebAdminFiles embed.FS
@@ -15,5 +18,5 @@ type EmbedsInfo struct {
 
 var WebEmbeds = map[string]EmbedsInfo{
 	"/admin": {Fs: WebAdminFiles, Path: "web/admin/dist"},
-	"":       {Fs: WebDataBaseFiles, Path: "web/database/dist"},
+	"":       {Fs: WebLearnEnFiles, Path: "web/learn_en/dist"},
 }

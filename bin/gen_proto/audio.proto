@@ -1,0 +1,23 @@
+syntax = "proto3";
+// ✅ 告诉 Go 插件生成文件属于哪个包
+option go_package = "app/protos;protos";
+package audio;
+
+// 定义服务
+service Audio {
+  // 定义 RPC 方法
+  rpc Synthesizer (SynthesizerRequest) returns (SynthesizerReply) {}
+}
+// 定义请求消息
+message SynthesizerRequest {
+  string api_key = 1;
+  string model = 2;
+  string voice = 3;
+  string text = 4;
+}
+// 定义响应消息
+message SynthesizerReply {
+  bytes data = 1;
+  string message = 2;
+  int32 code = 3;
+}
