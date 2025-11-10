@@ -22,7 +22,7 @@ func InitializeLearnEnService(buildEnv string) (*learn_en.App, error) {
 		return nil, err
 	}
 	grpcFactory := learn_en.ProvideGrpc(config)
-	audioRepo := repo.NewAudioRepo(grpcFactory)
+	audioRepo := repo.NewAudioRepo(grpcFactory, config)
 	testRepo := test.NewRepo(db, config, audioRepo)
 	service := test.NewService(testRepo)
 	handler := test.NewHandler(service)

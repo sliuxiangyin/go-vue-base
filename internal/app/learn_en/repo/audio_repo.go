@@ -2,7 +2,8 @@ package repo
 
 import (
 	"context"
-	"databaseAi/internal/app/learn_en/proto"
+	protos "databaseAi/internal/app/learn_en/proto"
+	"databaseAi/internal/infra/config"
 	"databaseAi/internal/infra/grpc"
 	"fmt"
 	"time"
@@ -10,16 +11,18 @@ import (
 
 type AudioRepo struct {
 	grpcFactory *grpc.GrpcFactory
+	apiKey      string
 }
 
-func NewAudioRepo(grpcFactory *grpc.GrpcFactory) *AudioRepo {
+func NewAudioRepo(grpcFactory *grpc.GrpcFactory, config *config.Config) *AudioRepo {
 	return &AudioRepo{
 		grpcFactory: grpcFactory,
+		apiKey:      config.OpenaiKey,
 	}
 }
 
 // Synthesizer 调用 gRPC 服务进行语音合成
-func (r *AudioRepo) Synthesizer(apiKey, model, voice, text string) ([]byte, error) {
+func (r *AudioRepo) Synthesizer(model, voice, text string) ([]byte, error) {
 	// 获取 gRPC 连接
 	conn, err := r.grpcFactory.Get()
 	if err != nil {
@@ -35,7 +38,7 @@ func (r *AudioRepo) Synthesizer(apiKey, model, voice, text string) ([]byte, erro
 
 	// 调用 Synthesizer 方法
 	resp, err := client.Synthesizer(ctx, &protos.SynthesizerRequest{
-		ApiKey: apiKey,
+		ApiKey: r.apiKey,
 		Model:  model,
 		Voice:  voice,
 		Text:   text,

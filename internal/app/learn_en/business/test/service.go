@@ -16,6 +16,6 @@ func (s *Service) GetValue(key string) (string, bool) {
 	return s.repo.Get(key)
 }
 
-func (s *Service) SynthesizeAudio(apiKey, model, voice, text string) ([]byte, error) {
-	return s.repo.SynthesizeAudio(apiKey, model, voice, text)
+func (s *Service) SynthesizeAudio(model, voice, text string) ([]byte, error) {
+	return s.repo.SynthesizeAudio(model, voice, text)
 }

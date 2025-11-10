@@ -1,9 +1,12 @@
 package ai
 
 import (
+	"databaseAi/internal/infra/config"
+
+	"sync"
+
 	"github.com/openai/openai-go"
 	"github.com/openai/openai-go/option"
-	"sync"
 )
 
 type Openai struct {
@@ -37,4 +40,9 @@ func (f *Openai) Get() (openai.Client, error) {
 		)
 	})
 	return f.instance, f.err
+}
+
+// ProvideOpenai 为 Wire 提供 OpenAI 实例
+func ProvideOpenai(conf *config.Config) *Openai {
+	return NewOpenai(conf.OpenaiKey, conf.OpenaiURl)
 }

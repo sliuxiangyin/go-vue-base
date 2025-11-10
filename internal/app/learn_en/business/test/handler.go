@@ -13,8 +13,8 @@ func NewHandler(service *Service) *Handler {
 }
 func (h *Handler) RegisterRoutes(r fiber.Router) {
 	r.Post("/test", h.SetValue)
+	r.Get("/test/audio", h.TestAudio)
 	r.Get("/test/:key", h.GetValue)
-	r.Post("/test/audio", h.TestAudio)
 }
 
 func (h *Handler) SetValue(c *fiber.Ctx) error {
@@ -41,25 +41,19 @@ func (h *Handler) GetValue(c *fiber.Ctx) error {
 
 func (h *Handler) TestAudio(c *fiber.Ctx) error {
 	type req struct {
-		ApiKey string `json:"api_key,omitempty"`
-		Model  string `json:"model,omitempty"`
-		Voice  string `json:"voice,omitempty"`
-		Text   string `json:"text"`
+		Model string `json:"model,omitempty"`
+		Voice string `json:"voice,omitempty"`
+		Text  string `json:"text"`
 	}
-	var r req
-	if err := c.BodyParser(&r); err != nil {
-		return c.Status(400).JSON(fiber.Map{"error": "invalid request"})
+	var r req = req{
+		Model: "cosyvoice-v3",
+		Voice: "longxiaochun_v2",
+		Text:  "My world is up to me",
 	}
 
 	// 默认值
-	if r.Model == "" {
-		r.Model = "tts-1"
-	}
-	if r.Voice == "" {
-		r.Voice = "alloy"
-	}
 
-	audioData, err := h.service.SynthesizeAudio(r.ApiKey, r.Model, r.Voice, r.Text)
+	audioData, err := h.service.SynthesizeAudio(r.Model, r.Voice, r.Text)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 	}

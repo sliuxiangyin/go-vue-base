@@ -30,6 +30,6 @@ func (r *Repo) Get(key string) (string, bool) {
 	return val, ok
 }
 
-func (r *Repo) SynthesizeAudio(apiKey, model, voice, text string) ([]byte, error) {
-	return r.audioRepo.Synthesizer(apiKey, model, voice, text)
+func (r *Repo) SynthesizeAudio(model, voice, text string) ([]byte, error) {
+	return r.audioRepo.Synthesizer(model, voice, text)
 }

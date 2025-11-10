@@ -3,6 +3,7 @@ package learn_en
 import (
 	"databaseAi/internal/app/learn_en/business/test"
 	"databaseAi/internal/app/learn_en/repo"
+	"databaseAi/internal/infra/ai"
 	"databaseAi/internal/infra/config"
 	"databaseAi/internal/infra/database"
 	"databaseAi/internal/infra/grpc"
@@ -14,6 +15,7 @@ var ProviderLearnEnSet = wire.NewSet(
 	ProvideConfig,
 	ProvideDB,
 	ProvideGrpc,
+	ProvideOpenai,
 	// Repo layer
 	repo.NewAudioRepo,
 	// Test module
@@ -36,4 +38,8 @@ func ProvideGrpc(conf *config.Config) *grpc.GrpcFactory {
 
 func ProvideDB(conf *config.Config) (*database.DB, error) {
 	return database.NewDB(conf.DatabaseURL)
+}
+
+func ProvideOpenai(conf *config.Config) *ai.Openai {
+	return ai.ProvideOpenai(conf)
 }
