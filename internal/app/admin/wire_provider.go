@@ -2,9 +2,11 @@ package admin
 
 import (
 	"databaseAi/internal/app/admin/business/auth"
+	"databaseAi/internal/app/admin/business/lesson"
 	"databaseAi/internal/app/admin/business/rbac"
 	"databaseAi/internal/infra/config"
 	"databaseAi/internal/infra/database"
+	"databaseAi/internal/shared/repo"
 
 	"github.com/google/wire"
 )
@@ -12,6 +14,9 @@ import (
 var ProviderAdminSet = wire.NewSet(
 	ProvideConfig,
 	ProvideDB,
+	// Shared Repo
+	repo.NewLessonRepo,
+
 	// Auth module
 	auth.NewRepo,
 	ProvideAuthNewService,
@@ -21,6 +26,10 @@ var ProviderAdminSet = wire.NewSet(
 	rbac.NewRepo,
 	rbac.NewService,
 	ProvideRBACNewHandler,
+
+	// Lesson module
+	lesson.NewService,
+	ProvideLessonNewHandler,
 
 	// App
 	NewApp,
@@ -45,4 +54,8 @@ func ProvideAuthNewHandler(service *auth.Service) *auth.Handler {
 
 func ProvideRBACNewHandler(service *rbac.Service, authService *auth.Service) *rbac.Handler {
 	return rbac.NewHandler(service, authService)
+}
+
+func ProvideLessonNewHandler(service *lesson.Service, authService *auth.Service) *lesson.Handler {
+	return lesson.NewHandler(service, authService)
 }

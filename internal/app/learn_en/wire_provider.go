@@ -8,6 +8,7 @@ import (
 	"databaseAi/internal/infra/database"
 	"databaseAi/internal/infra/grpc"
 	"databaseAi/internal/infra/storage"
+	sharedRepo "databaseAi/internal/shared/repo"
 
 	"github.com/google/wire"
 )
@@ -18,10 +19,11 @@ var ProviderLearnEnSet = wire.NewSet(
 	ProvideGrpc,
 	ProvideOpenai,
 	ProvideFileStorage,
+	// Shared Repo layer
+	sharedRepo.NewLessonRepo,
 	// Repo layer
 	repo.NewAudioRepo,
 	repo.NewSemanticRepo,
-	repo.NewLessonRepo, // 新增：课程仓库（使用共享模型）
 	// Test module
 	test.NewRepo,
 	test.NewService,

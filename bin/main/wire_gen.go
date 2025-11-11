@@ -9,10 +9,12 @@ package main
 import (
 	"databaseAi/internal/app/admin"
 	"databaseAi/internal/app/admin/business/auth"
+	"databaseAi/internal/app/admin/business/lesson"
 	"databaseAi/internal/app/admin/business/rbac"
 	"databaseAi/internal/app/learn_en"
 	"databaseAi/internal/app/learn_en/business/test"
 	"databaseAi/internal/app/learn_en/repo"
+	repo2 "databaseAi/internal/shared/repo"
 )
 
 // Injectors from wire.go:
@@ -48,6 +50,9 @@ func InitializeAdminService(buildEnv string) (*admin.App, error) {
 	rbacRepo := rbac.NewRepo(db)
 	rbacService := rbac.NewService(rbacRepo)
 	rbacHandler := admin.ProvideRBACNewHandler(rbacService, service)
-	app := admin.NewApp(config, db, handler, rbacHandler)
+	lessonRepo := repo2.NewLessonRepo(db)
+	lessonService := lesson.NewService(lessonRepo, rbacService)
+	lessonHandler := admin.ProvideLessonNewHandler(lessonService, service)
+	app := admin.NewApp(config, db, handler, rbacHandler, lessonHandler)
 	return app, nil
 }

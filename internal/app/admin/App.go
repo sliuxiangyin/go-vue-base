@@ -2,6 +2,7 @@ package admin
 
 import (
 	"databaseAi/internal/app/admin/business/auth"
+	"databaseAi/internal/app/admin/business/lesson"
 	"databaseAi/internal/app/admin/business/rbac"
 	"databaseAi/internal/infra/config"
 	"databaseAi/internal/infra/database"
@@ -18,7 +19,8 @@ func NewApp(
 	conf *config.Config,
 	db *database.DB,
 	authHandler *auth.Handler,
-	rbacHandler *rbac.Handler) *App {
+	rbacHandler *rbac.Handler,
+	lessonHandler *lesson.Handler) *App {
 	app := &App{
 		Config: conf,
 		DB:     db,
@@ -26,6 +28,7 @@ func NewApp(
 	// 添加 handlers 到 handlers 列表
 	app.AddHandler(authHandler)
 	app.AddHandler(rbacHandler)
+	app.AddHandler(lessonHandler)
 	return app
 }
 
