@@ -180,6 +180,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/lessons/': RouteRecordInfo<
+      '/lessons/',
+      '/lessons',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/marketing/': RouteRecordInfo<
       '/marketing/',
       '/marketing',
@@ -419,6 +426,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/help-center.vue': {
       routes:
         | '/help-center'
+      views:
+        | never
+    }
+    'src/pages/lessons/index.vue': {
+      routes:
+        | '/lessons/'
       views:
         | never
     }

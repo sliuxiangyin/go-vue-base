@@ -1,6 +1,7 @@
 import {
   BadgeHelp,
   BellDot,
+  BookOpen,
   Boxes,
   Bug,
   Component,
@@ -61,6 +62,11 @@ export function useSidebar() {
           title: 'Ai Talk Example',
           url: '/ai-talk',
           icon: Podcast,
+        },
+        {
+          title: '英文课程',
+          url: '/lessons',
+          icon: BookOpen,
         },
       ],
     },
