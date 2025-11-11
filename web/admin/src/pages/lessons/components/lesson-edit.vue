@@ -22,7 +22,6 @@ const form = ref<LessonForm>({
   tags: props.lesson.tags || [],
   semantic_json: props.lesson.semantic_json || undefined,
   word_timestamp_json: props.lesson.word_timestamp_json || undefined,
-  phonetic_json: props.lesson.phonetic_json || undefined,
 })
 
 const tagInput = ref('')

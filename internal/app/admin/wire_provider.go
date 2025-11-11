@@ -16,6 +16,7 @@ var ProviderAdminSet = wire.NewSet(
 	ProvideDB,
 	// Shared Repo
 	repo.NewLessonRepo,
+	repo.NewPhoneticDictionaryRepo,
 
 	// Auth module
 	auth.NewRepo,

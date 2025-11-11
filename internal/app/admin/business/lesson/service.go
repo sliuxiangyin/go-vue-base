@@ -7,19 +7,32 @@ import (
 )
 
 type Service struct {
-	lessonRepo  *repo.LessonRepo
-	rbacService *rbac.Service // 用于权限检查
+	lessonRepo   *repo.LessonRepo
+	phoneticRepo *repo.PhoneticDictionaryRepo
+	rbacService  *rbac.Service // 用于权限检查
 }
 
-func NewService(lessonRepo *repo.LessonRepo, rbacService *rbac.Service) *Service {
+func NewService(lessonRepo *repo.LessonRepo, phoneticRepo *repo.PhoneticDictionaryRepo, rbacService *rbac.Service) *Service {
 	return &Service{
-		lessonRepo:  lessonRepo,
-		rbacService: rbacService,
+		lessonRepo:   lessonRepo,
+		phoneticRepo: phoneticRepo,
+		rbacService:  rbacService,
 	}
 }
 
 // CreateLesson 创建课程
 func (s *Service) CreateLesson(lesson *models.EnglishLesson) error {
+
+	//调用中文翻译
+
+	//如果有中文翻译 就不处理
+
+	//ContentEN 英文生成音频
+
+	//语义意群与时间戳匹配 处理
+
+	//
+
 	return s.lessonRepo.Create(lesson)
 }
 
@@ -49,7 +62,6 @@ func (s *Service) UpdateLesson(lesson *models.EnglishLesson) error {
 	existing.ContentZH = lesson.ContentZH
 	existing.SemanticJSON = lesson.SemanticJSON
 	existing.WordTimestampJSON = lesson.WordTimestampJSON
-	existing.PhoneticJSON = lesson.PhoneticJSON
 	existing.Tags = lesson.Tags
 	existing.Level = lesson.Level
 	existing.IsPublic = lesson.IsPublic
@@ -70,4 +82,26 @@ func (s *Service) SearchLessonsByTags(tags []string) ([]models.EnglishLesson, er
 // CheckUserPermission 实现 PermissionChecker 接口
 func (s *Service) CheckUserPermission(userID uint, permissionName string) (bool, error) {
 	return s.rbacService.CheckUserPermission(userID, permissionName)
+}
+
+// ========== 发音词典管理 ==========
+
+// CreateOrUpdatePhonetic 创建或更新单词发音
+func (s *Service) CreateOrUpdatePhonetic(word, ipa string) (*models.PhoneticDictionary, error) {
+	return s.phoneticRepo.CreateOrUpdate(word, ipa)
+}
+
+// GetPhoneticByWord 根据单词获取发音
+func (s *Service) GetPhoneticByWord(word string) (*models.PhoneticDictionary, error) {
+	return s.phoneticRepo.GetByWord(word)
+}
+
+// GetPhoneticsByWords 批量获取单词发音
+func (s *Service) GetPhoneticsByWords(words []string) ([]models.PhoneticDictionary, error) {
+	return s.phoneticRepo.GetByWords(words)
+}
+
+// ListPhonetics 获取发音词典列表
+func (s *Service) ListPhonetics(page, pageSize int) ([]models.PhoneticDictionary, int64, error) {
+	return s.phoneticRepo.List(page, pageSize)
 }

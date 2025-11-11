@@ -24,7 +24,6 @@ type EnglishLesson struct {
 	// JSON 字段
 	SemanticJSON      SemanticChunks `gorm:"type:json;comment:语义意群与时间戳匹配结果" json:"semantic_json"`
 	WordTimestampJSON WordTimestamps `gorm:"type:json;comment:Whisper输出的逐词时间戳" json:"word_timestamp_json"`
-	PhoneticJSON      Phonetics      `gorm:"type:json;comment:发音词典" json:"phonetic_json"`
 	Tags              Tags           `gorm:"type:json;comment:分类标签" json:"tags"`
 
 	Level    int8 `gorm:"type:tinyint;comment:难度等级（1~5）" json:"level"`
@@ -95,32 +94,10 @@ func (w *WordTimestamps) Scan(value interface{}) error {
 	return json.Unmarshal(bytes, w)
 }
 
-// Phonetic 发音信息结构
+// Phonetic 发音信息结构（用于临时数据传输）
 type Phonetic struct {
 	Word string `json:"word"`
 	IPA  string `json:"ipa"`
-}
-
-// Phonetics 发音信息数组
-type Phonetics []Phonetic
-
-func (p Phonetics) Value() (driver.Value, error) {
-	if p == nil {
-		return nil, nil
-	}
-	return json.Marshal(p)
-}
-
-func (p *Phonetics) Scan(value interface{}) error {
-	if value == nil {
-		*p = nil
-		return nil
-	}
-	bytes, ok := value.([]byte)
-	if !ok {
-		return nil
-	}
-	return json.Unmarshal(bytes, p)
 }
 
 // Tags 标签数组

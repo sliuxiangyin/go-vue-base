@@ -30,6 +30,7 @@ internal/
 
 ### 1. **模型共享，避免重复**
 - ✅ `EnglishLesson` 模型定义在 `internal/shared/models`
+- ✅ `PhoneticDictionary` 发音词典独立存储，全局共享
 - ✅ `admin` 和 `learn_en` 都可以直接使用
 - ✅ 单一数据源，避免不一致
 
@@ -41,9 +42,9 @@ internal/
 ### 3. **完整的 JSON 支持**
 - ✅ 语义意群 (`SemanticChunks`)
 - ✅ 逐词时间戳 (`WordTimestamps`)
-- ✅ 发音信息 (`Phonetics`)
 - ✅ 标签数组 (`Tags`)
 - ✅ 自动序列化/反序列化
+- ✅ 发音信息独立存储在 `phonetic_dictionary` 表，全局共享
 
 ### 4. **类型安全**
 ```go

@@ -109,6 +109,11 @@ func MigrateAdmin(db *database.DB) error {
 		return fmt.Errorf("failed to migrate english_lessons table: %w", err)
 	}
 
+	// 迁移发音词典表（全局共享）
+	if err := db.AutoMigrate(&sharedModels.PhoneticDictionary{}); err != nil {
+		return fmt.Errorf("failed to migrate phonetic_dictionary table: %w", err)
+	}
+
 	// 检查是否已存在默认管理员
 	var count int64
 	if err := db.Model(&models.AdminUser{}).Count(&count).Error; err != nil {
