@@ -1,7 +1,6 @@
 package config
 
 import (
-	"databaseAi/internal/utils"
 	"fmt"
 	"log"
 	"os"
@@ -17,20 +16,13 @@ type Config struct {
 	GrpcDNS     string
 	OpenaiURl   string
 	OpenaiKey   string
+	StoragePath string
+	JWTSecret   string
 }
 
 func NewConfig(buildEnv string) *Config {
 	var projectPath, _ = os.Getwd()
 
-	databaseUrl := ""
-
-	if buildEnv == "dev" {
-		projectPath = utils.ProjectRoot()
-		databaseUrl = fmt.Sprintf("file:%s?_foreign_keys=on", path.Join(projectPath, "app.db"))
-	} else {
-		dns := fmt.Sprintf("file:%s?_foreign_keys=on", path.Join(projectPath, "app.db"))
-		databaseUrl = getEnv("DATABASE_URL", dns)
-	}
 	// 尝试加载 .env 文件（如果存在）
 	err := godotenv.Load(path.Join(projectPath, ".env"))
 	if err != nil {
@@ -39,10 +31,12 @@ func NewConfig(buildEnv string) *Config {
 	cfg := &Config{
 		AppEnv:      getEnv("APP_ENV", buildEnv),
 		AppPort:     getEnv("APP_PORT", "8080"),
-		DatabaseURL: databaseUrl,
+		DatabaseURL: getEnv("DATABASE_URL", ""),
 		GrpcDNS:     getEnv("GRPC_DNS", "localhost:50051"),
 		OpenaiURl:   getEnv("OPENAI_URL", "https://dashscope.aliyuncs.com"),
 		OpenaiKey:   getEnv("OPENAI_KEY", "sk-523cb71b9cbe475ab7e7f27cdab6d379"),
+		StoragePath: getEnv("STORAGE_PATH", path.Join(projectPath, "storage")),
+		JWTSecret:   getEnv("JWT_SECRET", "your-secret-key-please-change-in-production"),
 	}
 
 	log.Printf("[config] Loaded configuration: env=%s, port=%s", cfg.AppEnv, cfg.AppPort)
@@ -54,4 +48,9 @@ func getEnv(key, fallback string) string {
 		return val
 	}
 	return fallback
+}
+
+// GetJWTSecret 获取 JWT 密钥
+func (c *Config) GetJWTSecret() string {
+	return c.JWTSecret
 }

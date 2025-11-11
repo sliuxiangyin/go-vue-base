@@ -1,5 +1,12 @@
 import type { ColumnDef } from '@tanstack/vue-table'
 
+// 扩展 TanStack Table 的 ColumnMeta 类型
+declare module '@tanstack/vue-table' {
+  interface ColumnMeta<TData, TValue> {
+    sticky?: 'left' | 'right'
+  }
+}
+
 export interface FacetedFilterOption {
   label: string
   value: string

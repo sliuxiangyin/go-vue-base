@@ -29,11 +29,19 @@ defineProps<DataTableProps<T> & {
   <div class="space-y-4">
     <slot name="toolbar" />
 
-    <div class="border rounded-md">
+    <div class="border rounded-md overflow-auto">
       <Table>
         <TableHeader>
           <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
-            <TableHead v-for="header in headerGroup.headers" :key="header.id">
+            <TableHead 
+              v-for="header in headerGroup.headers" 
+              :key="header.id"
+              :class="[
+                header.column.columnDef.meta?.sticky === 'left' && 'sticky left-0 z-10 bg-background',
+                header.column.columnDef.meta?.sticky === 'right' && 'sticky right-0 z-10 bg-background',
+                (header.column.columnDef.meta?.sticky === 'left' || header.column.columnDef.meta?.sticky === 'right') && 'shadow-[0_0_0_1px_hsl(var(--border))]',
+              ]"
+            >
               <FlexRender v-if="!header.isPlaceholder" :render="header.column.columnDef.header" :props="header.getContext()" />
             </TableHead>
           </TableRow>
@@ -45,7 +53,15 @@ defineProps<DataTableProps<T> & {
               :key="row.id"
               :data-state="row.getIsSelected() && 'selected'"
             >
-              <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
+              <TableCell 
+                v-for="cell in row.getVisibleCells()" 
+                :key="cell.id"
+                :class="[
+                  cell.column.columnDef.meta?.sticky === 'left' && 'sticky left-0 z-10 bg-background',
+                  cell.column.columnDef.meta?.sticky === 'right' && 'sticky right-0 z-10 bg-background',
+                  (cell.column.columnDef.meta?.sticky === 'left' || cell.column.columnDef.meta?.sticky === 'right') && 'shadow-[0_0_0_1px_hsl(var(--border))]',
+                ]"
+              >
                 <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
               </TableCell>
             </TableRow>

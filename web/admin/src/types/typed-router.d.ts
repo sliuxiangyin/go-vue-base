@@ -194,6 +194,27 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/rbac/admin-users/': RouteRecordInfo<
+      '/rbac/admin-users/',
+      '/rbac/admin-users',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/rbac/permissions/': RouteRecordInfo<
+      '/rbac/permissions/',
+      '/rbac/permissions',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/rbac/roles/': RouteRecordInfo<
+      '/rbac/roles/',
+      '/rbac/roles',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/settings/': RouteRecordInfo<
       '/settings/',
       '/settings',
@@ -410,6 +431,24 @@ declare module 'vue-router/auto-routes' {
     'src/pages/marketing/hello.vue': {
       routes:
         | '/marketing/hello'
+      views:
+        | never
+    }
+    'src/pages/rbac/admin-users/index.vue': {
+      routes:
+        | '/rbac/admin-users/'
+      views:
+        | never
+    }
+    'src/pages/rbac/permissions/index.vue': {
+      routes:
+        | '/rbac/permissions/'
+      views:
+        | never
+    }
+    'src/pages/rbac/roles/index.vue': {
+      routes:
+        | '/rbac/roles/'
       views:
         | never
     }

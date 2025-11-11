@@ -19,7 +19,12 @@ const delegatedProps = computed(() => {
 
   return delegated
 })
-
+watchEffect(() => {
+  console.log(props.value);
+  if (props.value === '') {
+    console.warn('SelectItem: value 不能为空字符串。使用 null 或 undefined 代替。')
+  }
+})
 const forwardedProps = useForwardProps(delegatedProps)
 </script>
 

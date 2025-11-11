@@ -28,6 +28,7 @@ type SynthesizerRequest struct {
 	Model         string                 `protobuf:"bytes,2,opt,name=model,proto3" json:"model,omitempty"`
 	Voice         string                 `protobuf:"bytes,3,opt,name=voice,proto3" json:"voice,omitempty"`
 	Text          string                 `protobuf:"bytes,4,opt,name=text,proto3" json:"text,omitempty"`
+	LanguageType  string                 `protobuf:"bytes,5,opt,name=language_type,json=languageType,proto3" json:"language_type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -90,10 +91,17 @@ func (x *SynthesizerRequest) GetText() string {
 	return ""
 }
 
+func (x *SynthesizerRequest) GetLanguageType() string {
+	if x != nil {
+		return x.LanguageType
+	}
+	return ""
+}
+
 // 定义响应消息
 type SynthesizerReply struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Data          []byte                 `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
+	Url           string                 `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
 	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	Code          int32                  `protobuf:"varint,3,opt,name=code,proto3" json:"code,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -130,11 +138,11 @@ func (*SynthesizerReply) Descriptor() ([]byte, []int) {
 	return file_audio_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *SynthesizerReply) GetData() []byte {
+func (x *SynthesizerReply) GetUrl() string {
 	if x != nil {
-		return x.Data
+		return x.Url
 	}
-	return nil
+	return ""
 }
 
 func (x *SynthesizerReply) GetMessage() string {
@@ -151,22 +159,251 @@ func (x *SynthesizerReply) GetCode() int32 {
 	return 0
 }
 
+// Whisper 转录请求
+type TranscribeRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AudioPath     string                 `protobuf:"bytes,1,opt,name=audio_path,json=audioPath,proto3" json:"audio_path,omitempty"` // 音频文件路径
+	Language      string                 `protobuf:"bytes,2,opt,name=language,proto3" json:"language,omitempty"`                    // 语言代码，如 "en"
+	ModelSize     string                 `protobuf:"bytes,3,opt,name=model_size,json=modelSize,proto3" json:"model_size,omitempty"` // 模型大小: tiny/base/small/medium/large
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TranscribeRequest) Reset() {
+	*x = TranscribeRequest{}
+	mi := &file_audio_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TranscribeRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TranscribeRequest) ProtoMessage() {}
+
+func (x *TranscribeRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_audio_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TranscribeRequest.ProtoReflect.Descriptor instead.
+func (*TranscribeRequest) Descriptor() ([]byte, []int) {
+	return file_audio_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *TranscribeRequest) GetAudioPath() string {
+	if x != nil {
+		return x.AudioPath
+	}
+	return ""
+}
+
+func (x *TranscribeRequest) GetLanguage() string {
+	if x != nil {
+		return x.Language
+	}
+	return ""
+}
+
+func (x *TranscribeRequest) GetModelSize() string {
+	if x != nil {
+		return x.ModelSize
+	}
+	return ""
+}
+
+// 单词时间戳信息
+type WordTimestamp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Word          string                 `protobuf:"bytes,1,opt,name=word,proto3" json:"word,omitempty"`               // 单词文本
+	Start         float64                `protobuf:"fixed64,2,opt,name=start,proto3" json:"start,omitempty"`           // 开始时间（秒）
+	End           float64                `protobuf:"fixed64,3,opt,name=end,proto3" json:"end,omitempty"`               // 结束时间（秒）
+	Confidence    float64                `protobuf:"fixed64,4,opt,name=confidence,proto3" json:"confidence,omitempty"` // 置信度
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *WordTimestamp) Reset() {
+	*x = WordTimestamp{}
+	mi := &file_audio_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *WordTimestamp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*WordTimestamp) ProtoMessage() {}
+
+func (x *WordTimestamp) ProtoReflect() protoreflect.Message {
+	mi := &file_audio_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use WordTimestamp.ProtoReflect.Descriptor instead.
+func (*WordTimestamp) Descriptor() ([]byte, []int) {
+	return file_audio_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *WordTimestamp) GetWord() string {
+	if x != nil {
+		return x.Word
+	}
+	return ""
+}
+
+func (x *WordTimestamp) GetStart() float64 {
+	if x != nil {
+		return x.Start
+	}
+	return 0
+}
+
+func (x *WordTimestamp) GetEnd() float64 {
+	if x != nil {
+		return x.End
+	}
+	return 0
+}
+
+func (x *WordTimestamp) GetConfidence() float64 {
+	if x != nil {
+		return x.Confidence
+	}
+	return 0
+}
+
+// Whisper 转录响应
+type TranscribeReply struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Text          string                 `protobuf:"bytes,1,opt,name=text,proto3" json:"text,omitempty"`         // 完整转录文本
+	Words         []*WordTimestamp       `protobuf:"bytes,2,rep,name=words,proto3" json:"words,omitempty"`       // 逐词时间戳列表
+	Language      string                 `protobuf:"bytes,3,opt,name=language,proto3" json:"language,omitempty"` // 检测到的语言
+	Code          int32                  `protobuf:"varint,4,opt,name=code,proto3" json:"code,omitempty"`        // 状态码
+	Message       string                 `protobuf:"bytes,5,opt,name=message,proto3" json:"message,omitempty"`   // 消息
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TranscribeReply) Reset() {
+	*x = TranscribeReply{}
+	mi := &file_audio_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TranscribeReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TranscribeReply) ProtoMessage() {}
+
+func (x *TranscribeReply) ProtoReflect() protoreflect.Message {
+	mi := &file_audio_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TranscribeReply.ProtoReflect.Descriptor instead.
+func (*TranscribeReply) Descriptor() ([]byte, []int) {
+	return file_audio_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *TranscribeReply) GetText() string {
+	if x != nil {
+		return x.Text
+	}
+	return ""
+}
+
+func (x *TranscribeReply) GetWords() []*WordTimestamp {
+	if x != nil {
+		return x.Words
+	}
+	return nil
+}
+
+func (x *TranscribeReply) GetLanguage() string {
+	if x != nil {
+		return x.Language
+	}
+	return ""
+}
+
+func (x *TranscribeReply) GetCode() int32 {
+	if x != nil {
+		return x.Code
+	}
+	return 0
+}
+
+func (x *TranscribeReply) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 var File_audio_proto protoreflect.FileDescriptor
 
 const file_audio_proto_rawDesc = "" +
 	"\n" +
-	"\vaudio.proto\x12\x05audio\"m\n" +
+	"\vaudio.proto\x12\x05audio\"\x92\x01\n" +
 	"\x12SynthesizerRequest\x12\x17\n" +
 	"\aapi_key\x18\x01 \x01(\tR\x06apiKey\x12\x14\n" +
 	"\x05model\x18\x02 \x01(\tR\x05model\x12\x14\n" +
 	"\x05voice\x18\x03 \x01(\tR\x05voice\x12\x12\n" +
-	"\x04text\x18\x04 \x01(\tR\x04text\"T\n" +
-	"\x10SynthesizerReply\x12\x12\n" +
-	"\x04data\x18\x01 \x01(\fR\x04data\x12\x18\n" +
+	"\x04text\x18\x04 \x01(\tR\x04text\x12#\n" +
+	"\rlanguage_type\x18\x05 \x01(\tR\flanguageType\"R\n" +
+	"\x10SynthesizerReply\x12\x10\n" +
+	"\x03url\x18\x01 \x01(\tR\x03url\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12\x12\n" +
-	"\x04code\x18\x03 \x01(\x05R\x04code2L\n" +
+	"\x04code\x18\x03 \x01(\x05R\x04code\"m\n" +
+	"\x11TranscribeRequest\x12\x1d\n" +
+	"\n" +
+	"audio_path\x18\x01 \x01(\tR\taudioPath\x12\x1a\n" +
+	"\blanguage\x18\x02 \x01(\tR\blanguage\x12\x1d\n" +
+	"\n" +
+	"model_size\x18\x03 \x01(\tR\tmodelSize\"k\n" +
+	"\rWordTimestamp\x12\x12\n" +
+	"\x04word\x18\x01 \x01(\tR\x04word\x12\x14\n" +
+	"\x05start\x18\x02 \x01(\x01R\x05start\x12\x10\n" +
+	"\x03end\x18\x03 \x01(\x01R\x03end\x12\x1e\n" +
+	"\n" +
+	"confidence\x18\x04 \x01(\x01R\n" +
+	"confidence\"\x9b\x01\n" +
+	"\x0fTranscribeReply\x12\x12\n" +
+	"\x04text\x18\x01 \x01(\tR\x04text\x12*\n" +
+	"\x05words\x18\x02 \x03(\v2\x14.audio.WordTimestampR\x05words\x12\x1a\n" +
+	"\blanguage\x18\x03 \x01(\tR\blanguage\x12\x12\n" +
+	"\x04code\x18\x04 \x01(\x05R\x04code\x12\x18\n" +
+	"\amessage\x18\x05 \x01(\tR\amessage2\x8e\x01\n" +
 	"\x05Audio\x12C\n" +
-	"\vSynthesizer\x12\x19.audio.SynthesizerRequest\x1a\x17.audio.SynthesizerReply\"\x00B^\n" +
+	"\vSynthesizer\x12\x19.audio.SynthesizerRequest\x1a\x17.audio.SynthesizerReply\"\x00\x12@\n" +
+	"\n" +
+	"Transcribe\x12\x18.audio.TranscribeRequest\x1a\x16.audio.TranscribeReply\"\x00B^\n" +
 	"\tcom.audioB\n" +
 	"AudioProtoP\x01Z\x11app/protos;protos\xa2\x02\x03AXX\xaa\x02\x05Audio\xca\x02\x05Audio\xe2\x02\x11Audio\\GPBMetadata\xea\x02\x05Audiob\x06proto3"
 
@@ -182,19 +419,25 @@ func file_audio_proto_rawDescGZIP() []byte {
 	return file_audio_proto_rawDescData
 }
 
-var file_audio_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_audio_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_audio_proto_goTypes = []any{
 	(*SynthesizerRequest)(nil), // 0: audio.SynthesizerRequest
 	(*SynthesizerReply)(nil),   // 1: audio.SynthesizerReply
+	(*TranscribeRequest)(nil),  // 2: audio.TranscribeRequest
+	(*WordTimestamp)(nil),      // 3: audio.WordTimestamp
+	(*TranscribeReply)(nil),    // 4: audio.TranscribeReply
 }
 var file_audio_proto_depIdxs = []int32{
-	0, // 0: audio.Audio.Synthesizer:input_type -> audio.SynthesizerRequest
-	1, // 1: audio.Audio.Synthesizer:output_type -> audio.SynthesizerReply
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	3, // 0: audio.TranscribeReply.words:type_name -> audio.WordTimestamp
+	0, // 1: audio.Audio.Synthesizer:input_type -> audio.SynthesizerRequest
+	2, // 2: audio.Audio.Transcribe:input_type -> audio.TranscribeRequest
+	1, // 3: audio.Audio.Synthesizer:output_type -> audio.SynthesizerReply
+	4, // 4: audio.Audio.Transcribe:output_type -> audio.TranscribeReply
+	3, // [3:5] is the sub-list for method output_type
+	1, // [1:3] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_audio_proto_init() }
@@ -208,7 +451,7 @@ func file_audio_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_audio_proto_rawDesc), len(file_audio_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

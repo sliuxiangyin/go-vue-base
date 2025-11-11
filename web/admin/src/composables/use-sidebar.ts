@@ -11,6 +11,8 @@ import {
   PictureInPicture2,
   Podcast,
   Settings,
+  Shield,
+  ShieldCheck,
   SquareUserRound,
   User,
   Users,
@@ -45,6 +47,15 @@ export function useSidebar() {
           title: 'Users',
           url: '/users',
           icon: Users,
+        },
+        {
+          title: 'RBAC',
+          icon: Shield,
+          items: [
+            { title: '管理员管理', url: '/rbac/admin-users', icon: Users },
+            { title: '角色管理', url: '/rbac/roles', icon: ShieldCheck },
+            { title: '权限管理', url: '/rbac/permissions', icon: Shield },
+          ],
         },
         {
           title: 'Ai Talk Example',

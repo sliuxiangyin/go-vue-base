@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0b\x61udio.proto\x12\x05\x61udio\"m\n\x12SynthesizerRequest\x12\x17\n\x07\x61pi_key\x18\x01 \x01(\tR\x06\x61piKey\x12\x14\n\x05model\x18\x02 \x01(\tR\x05model\x12\x14\n\x05voice\x18\x03 \x01(\tR\x05voice\x12\x12\n\x04text\x18\x04 \x01(\tR\x04text\"T\n\x10SynthesizerReply\x12\x12\n\x04\x64\x61ta\x18\x01 \x01(\x0cR\x04\x64\x61ta\x12\x18\n\x07message\x18\x02 \x01(\tR\x07message\x12\x12\n\x04\x63ode\x18\x03 \x01(\x05R\x04\x63ode2L\n\x05\x41udio\x12\x43\n\x0bSynthesizer\x12\x19.audio.SynthesizerRequest\x1a\x17.audio.SynthesizerReply\"\x00\x42^\n\tcom.audioB\nAudioProtoP\x01Z\x11\x61pp/protos;protos\xa2\x02\x03\x41XX\xaa\x02\x05\x41udio\xca\x02\x05\x41udio\xe2\x02\x11\x41udio\\GPBMetadata\xea\x02\x05\x41udiob\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0b\x61udio.proto\x12\x05\x61udio\"\x92\x01\n\x12SynthesizerRequest\x12\x17\n\x07\x61pi_key\x18\x01 \x01(\tR\x06\x61piKey\x12\x14\n\x05model\x18\x02 \x01(\tR\x05model\x12\x14\n\x05voice\x18\x03 \x01(\tR\x05voice\x12\x12\n\x04text\x18\x04 \x01(\tR\x04text\x12#\n\rlanguage_type\x18\x05 \x01(\tR\x0clanguageType\"R\n\x10SynthesizerReply\x12\x10\n\x03url\x18\x01 \x01(\tR\x03url\x12\x18\n\x07message\x18\x02 \x01(\tR\x07message\x12\x12\n\x04\x63ode\x18\x03 \x01(\x05R\x04\x63ode\"m\n\x11TranscribeRequest\x12\x1d\n\naudio_path\x18\x01 \x01(\tR\taudioPath\x12\x1a\n\x08language\x18\x02 \x01(\tR\x08language\x12\x1d\n\nmodel_size\x18\x03 \x01(\tR\tmodelSize\"k\n\rWordTimestamp\x12\x12\n\x04word\x18\x01 \x01(\tR\x04word\x12\x14\n\x05start\x18\x02 \x01(\x01R\x05start\x12\x10\n\x03\x65nd\x18\x03 \x01(\x01R\x03\x65nd\x12\x1e\n\nconfidence\x18\x04 \x01(\x01R\nconfidence\"\x9b\x01\n\x0fTranscribeReply\x12\x12\n\x04text\x18\x01 \x01(\tR\x04text\x12*\n\x05words\x18\x02 \x03(\x0b\x32\x14.audio.WordTimestampR\x05words\x12\x1a\n\x08language\x18\x03 \x01(\tR\x08language\x12\x12\n\x04\x63ode\x18\x04 \x01(\x05R\x04\x63ode\x12\x18\n\x07message\x18\x05 \x01(\tR\x07message2\x8e\x01\n\x05\x41udio\x12\x43\n\x0bSynthesizer\x12\x19.audio.SynthesizerRequest\x1a\x17.audio.SynthesizerReply\"\x00\x12@\n\nTranscribe\x12\x18.audio.TranscribeRequest\x1a\x16.audio.TranscribeReply\"\x00\x42^\n\tcom.audioB\nAudioProtoP\x01Z\x11\x61pp/protos;protos\xa2\x02\x03\x41XX\xaa\x02\x05\x41udio\xca\x02\x05\x41udio\xe2\x02\x11\x41udio\\GPBMetadata\xea\x02\x05\x41udiob\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -32,10 +32,16 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'audio_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'\n\tcom.audioB\nAudioProtoP\001Z\021app/protos;protos\242\002\003AXX\252\002\005Audio\312\002\005Audio\342\002\021Audio\\GPBMetadata\352\002\005Audio'
-  _globals['_SYNTHESIZERREQUEST']._serialized_start=22
-  _globals['_SYNTHESIZERREQUEST']._serialized_end=131
-  _globals['_SYNTHESIZERREPLY']._serialized_start=133
-  _globals['_SYNTHESIZERREPLY']._serialized_end=217
-  _globals['_AUDIO']._serialized_start=219
-  _globals['_AUDIO']._serialized_end=295
+  _globals['_SYNTHESIZERREQUEST']._serialized_start=23
+  _globals['_SYNTHESIZERREQUEST']._serialized_end=169
+  _globals['_SYNTHESIZERREPLY']._serialized_start=171
+  _globals['_SYNTHESIZERREPLY']._serialized_end=253
+  _globals['_TRANSCRIBEREQUEST']._serialized_start=255
+  _globals['_TRANSCRIBEREQUEST']._serialized_end=364
+  _globals['_WORDTIMESTAMP']._serialized_start=366
+  _globals['_WORDTIMESTAMP']._serialized_end=473
+  _globals['_TRANSCRIBEREPLY']._serialized_start=476
+  _globals['_TRANSCRIBEREPLY']._serialized_end=631
+  _globals['_AUDIO']._serialized_start=634
+  _globals['_AUDIO']._serialized_end=776
 # @@protoc_insertion_point(module_scope)

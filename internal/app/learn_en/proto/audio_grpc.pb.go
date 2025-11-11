@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	Audio_Synthesizer_FullMethodName = "/audio.Audio/Synthesizer"
+	Audio_Transcribe_FullMethodName  = "/audio.Audio/Transcribe"
 )
 
 // AudioClient is the client API for Audio service.
@@ -30,6 +31,7 @@ const (
 type AudioClient interface {
 	// 定义 RPC 方法
 	Synthesizer(ctx context.Context, in *SynthesizerRequest, opts ...grpc.CallOption) (*SynthesizerReply, error)
+	Transcribe(ctx context.Context, in *TranscribeRequest, opts ...grpc.CallOption) (*TranscribeReply, error)
 }
 
 type audioClient struct {
@@ -50,6 +52,16 @@ func (c *audioClient) Synthesizer(ctx context.Context, in *SynthesizerRequest, o
 	return out, nil
 }
 
+func (c *audioClient) Transcribe(ctx context.Context, in *TranscribeRequest, opts ...grpc.CallOption) (*TranscribeReply, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TranscribeReply)
+	err := c.cc.Invoke(ctx, Audio_Transcribe_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AudioServer is the server API for Audio service.
 // All implementations must embed UnimplementedAudioServer
 // for forward compatibility.
@@ -58,6 +70,7 @@ func (c *audioClient) Synthesizer(ctx context.Context, in *SynthesizerRequest, o
 type AudioServer interface {
 	// 定义 RPC 方法
 	Synthesizer(context.Context, *SynthesizerRequest) (*SynthesizerReply, error)
+	Transcribe(context.Context, *TranscribeRequest) (*TranscribeReply, error)
 	mustEmbedUnimplementedAudioServer()
 }
 
@@ -70,6 +83,9 @@ type UnimplementedAudioServer struct{}
 
 func (UnimplementedAudioServer) Synthesizer(context.Context, *SynthesizerRequest) (*SynthesizerReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Synthesizer not implemented")
+}
+func (UnimplementedAudioServer) Transcribe(context.Context, *TranscribeRequest) (*TranscribeReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Transcribe not implemented")
 }
 func (UnimplementedAudioServer) mustEmbedUnimplementedAudioServer() {}
 func (UnimplementedAudioServer) testEmbeddedByValue()               {}
@@ -110,6 +126,24 @@ func _Audio_Synthesizer_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Audio_Transcribe_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TranscribeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AudioServer).Transcribe(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Audio_Transcribe_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AudioServer).Transcribe(ctx, req.(*TranscribeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Audio_ServiceDesc is the grpc.ServiceDesc for Audio service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -120,6 +154,10 @@ var Audio_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Synthesizer",
 			Handler:    _Audio_Synthesizer_Handler,
+		},
+		{
+			MethodName: "Transcribe",
+			Handler:    _Audio_Transcribe_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

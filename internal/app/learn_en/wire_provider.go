@@ -7,6 +7,7 @@ import (
 	"databaseAi/internal/infra/config"
 	"databaseAi/internal/infra/database"
 	"databaseAi/internal/infra/grpc"
+	"databaseAi/internal/infra/storage"
 
 	"github.com/google/wire"
 )
@@ -16,8 +17,11 @@ var ProviderLearnEnSet = wire.NewSet(
 	ProvideDB,
 	ProvideGrpc,
 	ProvideOpenai,
+	ProvideFileStorage,
 	// Repo layer
 	repo.NewAudioRepo,
+	repo.NewSemanticRepo,
+	repo.NewLessonRepo, // 新增：课程仓库（使用共享模型）
 	// Test module
 	test.NewRepo,
 	test.NewService,
@@ -42,4 +46,8 @@ func ProvideDB(conf *config.Config) (*database.DB, error) {
 
 func ProvideOpenai(conf *config.Config) *ai.Openai {
 	return ai.ProvideOpenai(conf)
+}
+
+func ProvideFileStorage(conf *config.Config) *storage.FileStorage {
+	return storage.NewFileStorage(conf.AppEnv)
 }

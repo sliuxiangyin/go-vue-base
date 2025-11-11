@@ -7,6 +7,7 @@ package audio;
 service Audio {
   // 定义 RPC 方法
   rpc Synthesizer (SynthesizerRequest) returns (SynthesizerReply) {}
+  rpc Transcribe (TranscribeRequest) returns (TranscribeReply) {}
 }
 // 定义请求消息
 message SynthesizerRequest {
@@ -14,10 +15,35 @@ message SynthesizerRequest {
   string model = 2;
   string voice = 3;
   string text = 4;
+  string language_type = 5;
 }
 // 定义响应消息
 message SynthesizerReply {
-  bytes data = 1;
+  string url = 1;
   string message = 2;
   int32 code = 3;
+}
+
+// Whisper 转录请求
+message TranscribeRequest {
+  string audio_path = 1;  // 音频文件路径
+  string language = 2;    // 语言代码，如 "en"
+  string model_size = 3;  // 模型大小: tiny/base/small/medium/large
+}
+
+// 单词时间戳信息
+message WordTimestamp {
+  string word = 1;        // 单词文本
+  double start = 2;       // 开始时间（秒）
+  double end = 3;         // 结束时间（秒）
+  double confidence = 4;  // 置信度
+}
+
+// Whisper 转录响应
+message TranscribeReply {
+  string text = 1;                    // 完整转录文本
+  repeated WordTimestamp words = 2;   // 逐词时间戳列表
+  string language = 3;                // 检测到的语言
+  int32 code = 4;                     // 状态码
+  string message = 5;                 // 消息
 }

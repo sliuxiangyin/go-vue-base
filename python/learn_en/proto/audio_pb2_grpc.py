@@ -20,6 +20,11 @@ class AudioStub(object):
                 request_serializer=audio__pb2.SynthesizerRequest.SerializeToString,
                 response_deserializer=audio__pb2.SynthesizerReply.FromString,
                 _registered_method=True)
+        self.Transcribe = channel.unary_unary(
+                '/audio.Audio/Transcribe',
+                request_serializer=audio__pb2.TranscribeRequest.SerializeToString,
+                response_deserializer=audio__pb2.TranscribeReply.FromString,
+                _registered_method=True)
 
 
 class AudioServicer(object):
@@ -33,6 +38,12 @@ class AudioServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def Transcribe(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_AudioServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -40,6 +51,11 @@ def add_AudioServicer_to_server(servicer, server):
                     servicer.Synthesizer,
                     request_deserializer=audio__pb2.SynthesizerRequest.FromString,
                     response_serializer=audio__pb2.SynthesizerReply.SerializeToString,
+            ),
+            'Transcribe': grpc.unary_unary_rpc_method_handler(
+                    servicer.Transcribe,
+                    request_deserializer=audio__pb2.TranscribeRequest.FromString,
+                    response_serializer=audio__pb2.TranscribeReply.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -70,6 +86,33 @@ class Audio(object):
             '/audio.Audio/Synthesizer',
             audio__pb2.SynthesizerRequest.SerializeToString,
             audio__pb2.SynthesizerReply.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def Transcribe(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/audio.Audio/Transcribe',
+            audio__pb2.TranscribeRequest.SerializeToString,
+            audio__pb2.TranscribeReply.FromString,
             options,
             channel_credentials,
             insecure,

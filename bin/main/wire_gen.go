@@ -7,6 +7,9 @@
 package main
 
 import (
+	"databaseAi/internal/app/admin"
+	"databaseAi/internal/app/admin/business/auth"
+	"databaseAi/internal/app/admin/business/rbac"
 	"databaseAi/internal/app/learn_en"
 	"databaseAi/internal/app/learn_en/business/test"
 	"databaseAi/internal/app/learn_en/repo"
@@ -22,10 +25,29 @@ func InitializeLearnEnService(buildEnv string) (*learn_en.App, error) {
 		return nil, err
 	}
 	grpcFactory := learn_en.ProvideGrpc(config)
-	audioRepo := repo.NewAudioRepo(grpcFactory, config)
-	testRepo := test.NewRepo(db, config, audioRepo)
+	fileStorage := learn_en.ProvideFileStorage(config)
+	audioRepo := repo.NewAudioRepo(grpcFactory, config, fileStorage)
+	openai := learn_en.ProvideOpenai(config)
+	semanticRepo := repo.NewSemanticRepo(openai)
+	testRepo := test.NewRepo(db, config, audioRepo, semanticRepo)
 	service := test.NewService(testRepo)
 	handler := test.NewHandler(service)
 	app := learn_en.NewApp(config, db, handler)
+	return app, nil
+}
+
+func InitializeAdminService(buildEnv string) (*admin.App, error) {
+	config := admin.ProvideConfig(buildEnv)
+	db, err := admin.ProvideDB(config)
+	if err != nil {
+		return nil, err
+	}
+	authRepo := auth.NewRepo(db)
+	service := admin.ProvideAuthNewService(authRepo, config)
+	handler := admin.ProvideAuthNewHandler(service)
+	rbacRepo := rbac.NewRepo(db)
+	rbacService := rbac.NewService(rbacRepo)
+	rbacHandler := admin.ProvideRBACNewHandler(rbacService, service)
+	app := admin.NewApp(config, db, handler, rbacHandler)
 	return app, nil
 }
