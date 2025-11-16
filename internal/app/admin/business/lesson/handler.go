@@ -48,7 +48,6 @@ func (h *Handler) CreateLesson(c *fiber.Ctx) error {
 		ContentZH         string                `json:"content_zh"`
 		SemanticJSON      models.SemanticChunks `json:"semantic_json"`
 		WordTimestampJSON models.WordTimestamps `json:"word_timestamp_json"`
-		PhoneticJSON      models.Phonetics      `json:"phonetic_json"`
 		Tags              models.Tags           `json:"tags"`
 		Level             int8                  `json:"level" validate:"min=1,max=5"`
 		IsPublic          bool                  `json:"is_public"`
@@ -71,7 +70,6 @@ func (h *Handler) CreateLesson(c *fiber.Ctx) error {
 		ContentZH:         req.ContentZH,
 		SemanticJSON:      req.SemanticJSON,
 		WordTimestampJSON: req.WordTimestampJSON,
-		PhoneticJSON:      req.PhoneticJSON,
 		Tags:              req.Tags,
 		Level:             req.Level,
 		IsPublic:          req.IsPublic,
@@ -99,7 +97,6 @@ func (h *Handler) UpdateLesson(c *fiber.Ctx) error {
 		ContentZH         string                `json:"content_zh"`
 		SemanticJSON      models.SemanticChunks `json:"semantic_json"`
 		WordTimestampJSON models.WordTimestamps `json:"word_timestamp_json"`
-		PhoneticJSON      models.Phonetics      `json:"phonetic_json"`
 		Tags              models.Tags           `json:"tags"`
 		Level             int8                  `json:"level" validate:"min=1,max=5"`
 		IsPublic          bool                  `json:"is_public"`
@@ -123,7 +120,6 @@ func (h *Handler) UpdateLesson(c *fiber.Ctx) error {
 		ContentZH:         req.ContentZH,
 		SemanticJSON:      req.SemanticJSON,
 		WordTimestampJSON: req.WordTimestampJSON,
-		PhoneticJSON:      req.PhoneticJSON,
 		Tags:              req.Tags,
 		Level:             req.Level,
 		IsPublic:          req.IsPublic,

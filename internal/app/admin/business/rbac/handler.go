@@ -225,15 +225,15 @@ func (h *Handler) UpdatePermission(c *fiber.Ctx) error {
 	}
 
 	type UpdatePermissionRequest struct {
-		DisplayName string                `json:"display_name" validate:"required,min=2,max=100"`
-		Description string                `json:"description" validate:"max=255"`
-		Category    string                `json:"category" validate:"max=50"`
-		Type        models.PermissionType `json:"type" validate:"required,oneof=backend frontend"`
-		Path        string                `json:"path" validate:"max=255"`
-		Icon        string                `json:"icon" validate:"max=50"`
-		ParentID    *uint                 `json:"parent_id"`
-		Sort        int                   `json:"sort"`
-		Status      int8                  `json:"status" validate:"oneof=0 1"`
+		DisplayName string `json:"display_name" validate:"required,min=2,max=100"`
+		Description string `json:"description" validate:"max=255"`
+		Category    string `json:"category" validate:"max=50"`
+		// Type        models.PermissionType `json:"type" validate:"required,oneof=backend frontend"`
+		Path     string `json:"path" validate:"max=255"`
+		Icon     string `json:"icon" validate:"max=50"`
+		ParentID *uint  `json:"parent_id"`
+		Sort     int    `json:"sort"`
+		Status   int8   `json:"status" validate:"oneof=0 1"`
 	}
 
 	var req UpdatePermissionRequest
@@ -247,7 +247,7 @@ func (h *Handler) UpdatePermission(c *fiber.Ctx) error {
 
 	permission, err := h.service.UpdatePermission(
 		uint(id), req.DisplayName, req.Description, req.Category,
-		req.Type, req.Path, req.Icon, req.ParentID, req.Sort, req.Status,
+		req.Path, req.Icon, req.ParentID, req.Sort, req.Status,
 	)
 	if err != nil {
 		return c.Status(400).JSON(fiber.Map{"code": 400, "message": err.Error()})

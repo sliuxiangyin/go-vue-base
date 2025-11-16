@@ -3,8 +3,10 @@ import { h } from 'vue'
 import DataTableColumnHeader from '@/components/data-table/column-header.vue'
 import { SelectColumn } from '@/components/data-table/table-columns'
 import Badge from '@/components/ui/badge/Badge.vue'
+import UiButton from '@/components/ui/button/Button.vue'
 import type { Permission } from '@/services/api/rbac.api'
 import DataTableRowActions from './data-table-row-actions.vue'
+import { ChevronDown, ChevronRight } from 'lucide-vue-next'
 
 export const columns: ColumnDef<Permission>[] = [
   SelectColumn as ColumnDef<Permission>,
@@ -24,7 +26,27 @@ export const columns: ColumnDef<Permission>[] = [
   {
     accessorKey: 'name',
     header: ({ column }) => h(DataTableColumnHeader<Permission>, { column, title: '权限标识' }),
-    cell: ({ row }) => h('div', { class: 'font-mono text-sm' }, row.getValue('name')),
+    cell: ({ row }) => {
+      const hasChildren = row.original.children && row.original.children.length > 0
+      const canExpand = row.getCanExpand()
+      
+      return h('div', { class: 'flex items-center gap-2' }, [
+        // 展开/折叠按钮（仅有子项时显示）
+        canExpand && hasChildren
+          ? h(UiButton, {
+              variant: 'ghost',
+              size: 'sm',
+              class: 'h-6 w-6 p-0',
+              onClick: () => row.toggleExpanded()
+            }, () => h(row.getIsExpanded() ? ChevronDown : ChevronRight, { class: 'h-4 w-4' }))
+          : h('div', { class: 'w-6' }),
+        // 权限标识
+        h('div', { 
+          class: 'font-mono text-sm',
+          style: { paddingLeft: `${row.depth * 1.5}rem` }
+        }, row.getValue('name')),
+      ])
+    },
     enableSorting: false,
     enableHiding: false,
   },

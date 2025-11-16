@@ -118,7 +118,7 @@ func (s *Service) CreatePermission(name, displayName, description, category stri
 }
 
 // UpdatePermission 更新权限
-func (s *Service) UpdatePermission(id uint, displayName, description, category string, permType models.PermissionType, path, icon string, parentID *uint, sort int, status int8) (*models.Permission, error) {
+func (s *Service) UpdatePermission(id uint, displayName, description, category string, path, icon string, parentID *uint, sort int, status int8) (*models.Permission, error) {
 	permission, err := s.repo.GetPermissionByID(id)
 	if err != nil {
 		return nil, errors.New("权限不存在")
@@ -127,7 +127,7 @@ func (s *Service) UpdatePermission(id uint, displayName, description, category s
 	permission.DisplayName = displayName
 	permission.Description = description
 	permission.Category = category
-	permission.Type = permType
+	// permission.Type = permType
 	permission.Path = path
 	permission.Icon = icon
 	permission.ParentID = parentID
@@ -163,7 +163,17 @@ func (s *Service) ListPermissions(page, pageSize int, category string, permType 
 	if pageSize < 1 || pageSize > 100 {
 		pageSize = 10
 	}
-	return s.repo.ListPermissions(page, pageSize, category, permType, status)
+	permissions, total, err := s.repo.ListPermissions(page, pageSize, category, permType, status)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// 如果是前端权限，构建树形结构
+	if permType != nil && *permType == models.PermissionTypeFrontend {
+		return s.buildPermissionTree(permissions), total, nil
+	}
+
+	return permissions, total, nil
 }
 
 // ListAllPermissions 获取所有权限（不分页）
@@ -225,7 +235,39 @@ func (s *Service) GetUserPermissions(userID uint) ([]models.Permission, error) {
 
 // GetUserFrontendPermissions 获取用户的前端权限(用于菜单渲染)
 func (s *Service) GetUserFrontendPermissions(userID uint) ([]models.Permission, error) {
-	return s.repo.GetUserPermissionsByType(userID, models.PermissionTypeFrontend)
+	permissions, err := s.repo.GetUserPermissionsByType(userID, models.PermissionTypeFrontend)
+	if err != nil {
+		return nil, err
+	}
+	// 构建树形结构
+	return s.buildPermissionTree(permissions), nil
+}
+
+// buildPermissionTree 构建权限树形结构
+func (s *Service) buildPermissionTree(permissions []models.Permission) []models.Permission {
+	// 创建ID到权限的映射
+	permMap := make(map[uint]*models.Permission)
+	for i := range permissions {
+		permMap[permissions[i].ID] = &permissions[i]
+		permissions[i].Children = []models.Permission{}
+	}
+
+	// 构建树形结构
+	var roots []models.Permission
+	for i := range permissions {
+		perm := &permissions[i]
+		if perm.ParentID == nil {
+			// 根节点
+			roots = append(roots, *perm)
+		} else {
+			// 子节点，添加到父节点的children中
+			if parent, ok := permMap[*perm.ParentID]; ok {
+				parent.Children = append(parent.Children, *perm)
+			}
+		}
+	}
+
+	return roots
 }
 
 // GetUserBackendPermissions 获取用户的后端API权限

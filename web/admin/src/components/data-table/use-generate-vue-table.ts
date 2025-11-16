@@ -6,7 +6,7 @@ import { valueUpdater } from '@/lib/utils'
 
 import type { DataTableProps } from './types'
 
-export function generateVueTable<T>(props: DataTableProps<T>) {
+export function generateVueTable<T>(props: DataTableProps<T>, extraConfig?: Partial<TableOptionsWithReactiveData<T>>) {
   const sorting = ref<SortingState>([])
   const columnFilters = ref<ColumnFiltersState>([])
   const columnVisibility = ref<VisibilityState>({})
@@ -55,6 +55,7 @@ export function generateVueTable<T>(props: DataTableProps<T>) {
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
+    ...extraConfig, // 合并额外的配置
   }
 
   if (useServerPagination) {

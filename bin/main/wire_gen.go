@@ -51,7 +51,8 @@ func InitializeAdminService(buildEnv string) (*admin.App, error) {
 	rbacService := rbac.NewService(rbacRepo)
 	rbacHandler := admin.ProvideRBACNewHandler(rbacService, service)
 	lessonRepo := repo2.NewLessonRepo(db)
-	lessonService := lesson.NewService(lessonRepo, rbacService)
+	phoneticDictionaryRepo := repo2.NewPhoneticDictionaryRepo(db)
+	lessonService := lesson.NewService(lessonRepo, phoneticDictionaryRepo, rbacService)
 	lessonHandler := admin.ProvideLessonNewHandler(lessonService, service)
 	app := admin.NewApp(config, db, handler, rbacHandler, lessonHandler)
 	return app, nil

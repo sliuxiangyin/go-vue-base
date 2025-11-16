@@ -4,9 +4,15 @@ import { useCreatePermissionMutation, useGetPermissionsQuery } from '@/services/
 import { toast } from 'vue-sonner'
 
 const emit = defineEmits<{
-  created: []
+  created: [],
+}>()
+const props = defineProps<{
+  active_tab: 'backend' | 'frontend'
 }>()
 
+watch(() => props.active_tab, (newValue) => {
+      form.value.type = newValue
+})
 const open = ref(false)
 const form = ref({
   name: '',

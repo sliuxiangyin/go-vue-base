@@ -38,8 +38,8 @@ function handlePageChange(newPage: number) {
 }
 
 function handleTabChange(tab: string | number) {
-    console.log(tab);
   if (typeof tab === 'string') {
+
     activeTab.value = tab as 'backend' | 'frontend'
     page.value = 1
     refetch()
@@ -54,7 +54,7 @@ function handleTabChange(tab: string | number) {
     sticky
   >
     <template #actions>
-      <PermissionCreate @created="refetch" />
+      <PermissionCreate :active_tab="activeTab" @created="refetch" />
     </template>
     
     <!-- Tab 切换 -->

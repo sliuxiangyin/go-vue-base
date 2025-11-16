@@ -336,6 +336,18 @@ export function useGetUserPermissionsQuery(userId: number) {
   })
 }
 
+// 获取用户的前端菜单权限（树形结构）
+export function useGetUserFrontendPermissionsQuery(userId: number) {
+  return useQuery<IResponse<Permission[]>, AxiosError>({
+    queryKey: ['user-frontend-permissions', userId],
+    queryFn: async () => {
+      const response = await axiosInstance.get(`/admin/users/${userId}/permissions/frontend`)
+      return response.data
+    },
+    enabled: !!userId,
+  })
+}
+
 // 获取当前用户的前端菜单权限
 export function useGetCurrentUserFrontendPermissionsQuery() {
   const userIdRef = ref<number | null>(null)
