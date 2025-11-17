@@ -173,6 +173,13 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/files/': RouteRecordInfo<
+      '/files/',
+      '/files',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/help-center': RouteRecordInfo<
       '/help-center',
       '/help-center',
@@ -420,6 +427,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/errors/503.vue': {
       routes:
         | '/errors/503'
+      views:
+        | never
+    }
+    'src/pages/files/index.vue': {
+      routes:
+        | '/files/'
       views:
         | never
     }

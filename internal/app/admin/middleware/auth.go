@@ -15,24 +15,27 @@ type TokenValidator interface {
 // AuthMiddleware JWT 认证中间件
 func AuthMiddleware(validator TokenValidator) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		authHeader := c.Get("Authorization")
-		if authHeader == "" {
-			return c.Status(401).JSON(fiber.Map{
-				"code":    401,
-				"message": "未提供认证令牌",
-			})
+		token := c.Query("token")
+		if token == "" {
+			authHeader := c.Get("Authorization")
+			if authHeader == "" {
+				return c.Status(401).JSON(fiber.Map{
+					"code":    401,
+					"message": "未提供认证令牌",
+				})
+			}
+
+			// 提取 token (Bearer xxx)
+			parts := strings.SplitN(authHeader, " ", 2)
+			if len(parts) != 2 || parts[0] != "Bearer" {
+				return c.Status(401).JSON(fiber.Map{
+					"code":    401,
+					"message": "认证令牌格式错误",
+				})
+			}
+			token = parts[1]
 		}
 
-		// 提取 token (Bearer xxx)
-		parts := strings.SplitN(authHeader, " ", 2)
-		if len(parts) != 2 || parts[0] != "Bearer" {
-			return c.Status(401).JSON(fiber.Map{
-				"code":    401,
-				"message": "认证令牌格式错误",
-			})
-		}
-
-		token := parts[1]
 		claims, err := validator.ValidateToken(token)
 		if err != nil {
 			return c.Status(401).JSON(fiber.Map{

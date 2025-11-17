@@ -22,9 +22,10 @@ type EnglishLesson struct {
 	ContentZH string  `gorm:"type:text;comment:中文翻译" json:"content_zh"`
 
 	// JSON 字段
-	SemanticJSON      SemanticChunks `gorm:"type:json;comment:语义意群与时间戳匹配结果" json:"semantic_json"`
-	WordTimestampJSON WordTimestamps `gorm:"type:json;comment:Whisper输出的逐词时间戳" json:"word_timestamp_json"`
-	Tags              Tags           `gorm:"type:json;comment:分类标签" json:"tags"`
+	SemanticJSON      SemanticMapChunks `gorm:"type:json;comment:语义意群与时间戳匹配结果" json:"semantic_json"`
+	TranslationMap    TranslationMap    `gorm:"type:json;comment:最小单词翻译map" json:"translation_map"`
+	WordTimestampJSON WordTimestamps    `gorm:"type:json;comment:Whisper输出的逐词时间戳" json:"word_timestamp_json"`
+	Tags              Tags              `gorm:"type:json;comment:分类标签" json:"tags"`
 
 	Level    int8 `gorm:"type:tinyint;comment:难度等级（1~5）" json:"level"`
 	IsPublic bool `gorm:"type:tinyint;default:0;comment:是否公开" json:"is_public"`
@@ -42,17 +43,17 @@ type SemanticChunk struct {
 	End   float64 `json:"end"`
 }
 
-// SemanticChunks 语义意群数组，实现 sql.Scanner 和 driver.Valuer 接口
-type SemanticChunks []SemanticChunk
+// SemanticMapChunks 语义意群数组，实现 sql.Scanner 和 driver.Valuer 接口
+type SemanticMapChunks map[int][]SemanticChunk
 
-func (s SemanticChunks) Value() (driver.Value, error) {
+func (s SemanticMapChunks) Value() (driver.Value, error) {
 	if s == nil {
 		return nil, nil
 	}
 	return json.Marshal(s)
 }
 
-func (s *SemanticChunks) Scan(value interface{}) error {
+func (s *SemanticMapChunks) Scan(value interface{}) error {
 	if value == nil {
 		*s = nil
 		return nil
@@ -92,6 +93,28 @@ func (w *WordTimestamps) Scan(value interface{}) error {
 		return nil
 	}
 	return json.Unmarshal(bytes, w)
+}
+
+// TranslationMap 单词翻译映射（word -> translation）
+type TranslationMap map[string]string
+
+func (t TranslationMap) Value() (driver.Value, error) {
+	if t == nil {
+		return nil, nil
+	}
+	return json.Marshal(t)
+}
+
+func (t *TranslationMap) Scan(value interface{}) error {
+	if value == nil {
+		*t = nil
+		return nil
+	}
+	bytes, ok := value.([]byte)
+	if !ok {
+		return nil
+	}
+	return json.Unmarshal(bytes, t)
 }
 
 // Phonetic 发音信息结构（用于临时数据传输）

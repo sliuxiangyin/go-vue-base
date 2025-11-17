@@ -2,10 +2,10 @@ package repo
 
 import (
 	"context"
-	protos "databaseAi/internal/app/learn_en/proto"
 	"databaseAi/internal/infra/config"
 	"databaseAi/internal/infra/grpc"
 	"databaseAi/internal/infra/storage"
+	protos "databaseAi/internal/shared/proto"
 	"fmt"
 	"time"
 )
@@ -67,6 +67,8 @@ func (r *AudioRepo) Synthesizer(model, voice, text, languageType string) (string
 
 // Transcribe 调用 gRPC 服务进行音频转录，返回逐词时间戳
 func (r *AudioRepo) Transcribe(audioPath, language, modelSize string) (*protos.TranscribeReply, error) {
+
+	audioPath = r.fileStorage.GetFullPath(audioPath)
 	// 获取 gRPC 连接
 	conn, err := r.grpcFactory.Get()
 	if err != nil {

@@ -2,6 +2,7 @@ package lesson
 
 import (
 	"databaseAi/internal/app/admin/middleware"
+	"databaseAi/internal/app/admin/utils"
 	"databaseAi/internal/shared/models"
 	"strconv"
 	"strings"
@@ -41,16 +42,15 @@ func (h *Handler) RegisterRoutes(r fiber.Router) {
 // CreateLesson 创建课程
 func (h *Handler) CreateLesson(c *fiber.Ctx) error {
 	type CreateLessonRequest struct {
-		Title             string                `json:"title" validate:"required,min=1,max=255"`
-		AudioURL          string                `json:"audio_url" validate:"max=512"`
-		Duration          float64               `json:"duration"`
-		ContentEN         string                `json:"content_en" validate:"required"`
-		ContentZH         string                `json:"content_zh"`
-		SemanticJSON      models.SemanticChunks `json:"semantic_json"`
-		WordTimestampJSON models.WordTimestamps `json:"word_timestamp_json"`
-		Tags              models.Tags           `json:"tags"`
-		Level             int8                  `json:"level" validate:"min=1,max=5"`
-		IsPublic          bool                  `json:"is_public"`
+		Title     string  `json:"title" validate:"required,min=1,max=255"`
+		AudioURL  string  `json:"audio_url" validate:"max=512"`
+		Duration  float64 `json:"duration"`
+		ContentEN string  `json:"content_en"  `
+		ContentZH string  `json:"content_zh"`
+
+		Tags     models.Tags `json:"tags"`
+		Level    int8        `json:"level" validate:"min=1,max=5"`
+		IsPublic bool        `json:"is_public"`
 	}
 
 	var req CreateLessonRequest
@@ -63,16 +63,15 @@ func (h *Handler) CreateLesson(c *fiber.Ctx) error {
 	}
 
 	lesson := &models.EnglishLesson{
-		Title:             req.Title,
-		AudioURL:          req.AudioURL,
-		Duration:          req.Duration,
-		ContentEN:         req.ContentEN,
-		ContentZH:         req.ContentZH,
-		SemanticJSON:      req.SemanticJSON,
-		WordTimestampJSON: req.WordTimestampJSON,
-		Tags:              req.Tags,
-		Level:             req.Level,
-		IsPublic:          req.IsPublic,
+		Title:     req.Title,
+		AudioURL:  req.AudioURL,
+		Duration:  req.Duration,
+		ContentEN: req.ContentEN,
+		ContentZH: req.ContentZH,
+
+		Tags:     req.Tags,
+		Level:    req.Level,
+		IsPublic: req.IsPublic,
 	}
 
 	if err := h.service.CreateLesson(lesson); err != nil {
@@ -90,16 +89,14 @@ func (h *Handler) UpdateLesson(c *fiber.Ctx) error {
 	}
 
 	type UpdateLessonRequest struct {
-		Title             string                `json:"title" validate:"required,min=1,max=255"`
-		AudioURL          string                `json:"audio_url" validate:"max=512"`
-		Duration          float64               `json:"duration"`
-		ContentEN         string                `json:"content_en" validate:"required"`
-		ContentZH         string                `json:"content_zh"`
-		SemanticJSON      models.SemanticChunks `json:"semantic_json"`
-		WordTimestampJSON models.WordTimestamps `json:"word_timestamp_json"`
-		Tags              models.Tags           `json:"tags"`
-		Level             int8                  `json:"level" validate:"min=1,max=5"`
-		IsPublic          bool                  `json:"is_public"`
+		Title     string      `json:"title" validate:"required,min=1,max=255"`
+		AudioURL  string      `json:"audio_url" validate:"max=512"`
+		Duration  float64     `json:"duration"`
+		ContentEN string      `json:"content_en" `
+		ContentZH string      `json:"content_zh"`
+		Tags      models.Tags `json:"tags"`
+		Level     int8        `json:"level" validate:"min=1,max=5"`
+		IsPublic  bool        `json:"is_public"`
 	}
 
 	var req UpdateLessonRequest
@@ -112,20 +109,18 @@ func (h *Handler) UpdateLesson(c *fiber.Ctx) error {
 	}
 
 	lesson := &models.EnglishLesson{
-		ID:                uint(id),
-		Title:             req.Title,
-		AudioURL:          req.AudioURL,
-		Duration:          req.Duration,
-		ContentEN:         req.ContentEN,
-		ContentZH:         req.ContentZH,
-		SemanticJSON:      req.SemanticJSON,
-		WordTimestampJSON: req.WordTimestampJSON,
-		Tags:              req.Tags,
-		Level:             req.Level,
-		IsPublic:          req.IsPublic,
+		ID:        uint(id),
+		Title:     req.Title,
+		AudioURL:  req.AudioURL,
+		Duration:  req.Duration,
+		ContentEN: req.ContentEN,
+		ContentZH: req.ContentZH,
+		Tags:      req.Tags,
+		Level:     req.Level,
+		IsPublic:  req.IsPublic,
 	}
 
-	if err := h.service.UpdateLesson(lesson); err != nil {
+	if err := h.service.UpdateLesson(lesson, utils.GetUserID(c)); err != nil {
 		return c.Status(400).JSON(fiber.Map{"code": 400, "message": err.Error()})
 	}
 
@@ -185,7 +180,6 @@ func (h *Handler) ListLessons(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"code": 500, "message": "获取列表失败"})
 	}
-
 	return c.JSON(fiber.Map{
 		"code":    0,
 		"message": "success",

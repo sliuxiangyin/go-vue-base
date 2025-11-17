@@ -49,7 +49,7 @@ func NewDB(dsn string) (*DB, error) {
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
 		logger.Config{
 			SlowThreshold:             time.Second, // 慢 SQL 阈值
-			LogLevel:                  logger.Info, // 日志级别
+			LogLevel:                  logger.Warn, // 日志级别
 			IgnoreRecordNotFoundError: true,        // 忽略 ErrRecordNotFound（记录未找到）错误
 			Colorful:                  false,       // 禁用彩色打印
 		},

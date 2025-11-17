@@ -7,7 +7,8 @@ import { toast } from 'vue-sonner'
 import env from '@/utils/env'
 
 const cookies = new Cookies()
-const TOKEN_KEY = 'admin_token'
+import { TOKEN_KEY } from '@/utils/constants'
+
 
 export function useAxios() {
   const axiosInstance = axios.create({

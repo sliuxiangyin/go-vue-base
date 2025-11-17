@@ -8,10 +8,14 @@ import ThemePopover from '@/components/custom-theme/theme-popover.vue'
 import ToggleTheme from '@/components/toggle-theme.vue'
 import { cn } from '@/lib/utils'
 import { useThemeStore } from '@/stores/theme'
+import { useServerEvents } from '@/composables/use-server-events'
 
 const defaultOpen = useCookies(['sidebar:state'])
 const themeStore = useThemeStore()
 const { contentLayout } = storeToRefs(themeStore)
+
+// 启动服务器事件监听
+const { connected } = useServerEvents()
 </script>
 
 <template>

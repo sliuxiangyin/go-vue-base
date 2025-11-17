@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { Plus } from 'lucide-vue-next'
+import { Plus, Upload, X } from 'lucide-vue-next'
 import { useCreateLessonMutation } from '@/services/api/lesson.api'
+import { useFileUpload } from '@/composables/use-file-upload'
 import { toast } from 'vue-sonner'
 import type { LessonForm } from '../data/schema'
 
@@ -11,6 +12,7 @@ const emit = defineEmits<{
 const open = ref(false)
 const form = ref<LessonForm>({
   title: '',
+  audio_url: '',
   content_en: '',
   content_zh: '',
   level: 1,
@@ -19,13 +21,70 @@ const form = ref<LessonForm>({
 })
 
 const tagInput = ref('')
+const audioFile = ref<File | null>(null)
+const audioFileName = ref('')
+const audioInputRef = ref<HTMLInputElement | null>(null)
 
 const { mutate: createLesson, isPending } = useCreateLessonMutation()
+const { uploading: audioUploading, progress: audioProgress, uploadFile } = useFileUpload()
 
-function handleSubmit() {
+// 音频文件选择
+function handleAudioSelect(event: Event) {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  
+  if (!file) return
+  
+  // 验证文件类型
+  if (!file.type.startsWith('audio/')) {
+    toast.error('请选择音频文件')
+    return
+  }
+  
+  // 验证文件大小（最多 50MB）
+  const maxSize = 50 * 1024 * 1024
+  if (file.size > maxSize) {
+    toast.error('音频文件大小不能超过 50MB')
+    return
+  }
+  
+  audioFile.value = file
+  audioFileName.value = file.name
+}
+
+// 移除音频
+function removeAudio() {
+  audioFile.value = null
+  audioFileName.value = ''
+  form.value.audio_url = ''
+}
+
+// 上传音频
+async function uploadAudio(): Promise<string | null> {
+  if (!audioFile.value) return null
+  
+  try {
+    const filePath = await uploadFile(audioFile.value, (progress) => {
+      console.log(`音频上传进度: ${progress.percentage}%`)
+    })
+    return filePath
+  } catch (error: any) {
+    toast.error(`音频上传失败: ${error.message}`)
+    return null
+  }
+}
+
+async function handleSubmit() {
   if (!form.value.title || !form.value.content_en) {
     toast.error('请填写必填字段')
     return
+  }
+
+  // 如果有音频文件，先上传
+  if (audioFile.value) {
+    const audioPath = await uploadAudio()
+    if (!audioPath) return
+    form.value.audio_url = audioPath
   }
 
   createLesson(form.value, {
@@ -48,6 +107,7 @@ function handleSubmit() {
 function resetForm() {
   form.value = {
     title: '',
+    audio_url: '',
     content_en: '',
     content_zh: '',
     level: 1,
@@ -55,6 +115,8 @@ function resetForm() {
     tags: [],
   }
   tagInput.value = ''
+  audioFile.value = null
+  audioFileName.value = ''
 }
 
 function handleOpenChange(newOpen: boolean) {
@@ -105,6 +167,60 @@ function removeTag(index: number) {
           />
         </div>
         
+        <!-- 音频文件上传 -->
+        <div class="grid gap-2">
+          <UiLabel for="audio">音频文件</UiLabel>
+          <div class="flex items-center gap-2">
+            <input
+              ref="audioInputRef"
+              id="audio"
+              type="file"
+              accept="audio/*"
+              class="hidden"
+              @change="handleAudioSelect"
+            />
+            <UiButton
+              v-if="!audioFileName"
+              type="button"
+              variant="outline"
+              class="w-full"
+              @click="audioInputRef?.click()"
+            >
+              <Upload class="mr-2 h-4 w-4" />
+              选择音频文件
+            </UiButton>
+            <div v-else class="flex items-center gap-2 flex-1">
+              <div class="flex-1 px-3 py-2 border rounded-md text-sm bg-muted">
+                {{ audioFileName }}
+              </div>
+              <UiButton
+                type="button"
+                variant="ghost"
+                size="sm"
+                @click="removeAudio"
+              >
+                <X class="h-4 w-4" />
+              </UiButton>
+            </div>
+          </div>
+          <!-- 上传进度 -->
+          <div v-if="audioUploading" class="space-y-1">
+            <div class="flex items-center justify-between text-xs text-muted-foreground">
+              <span>上传中...</span>
+              <span>{{ audioProgress.percentage }}%</span>
+            </div>
+            <div class="w-full bg-secondary rounded-full h-2">
+              <div 
+                class="bg-primary h-2 rounded-full transition-all duration-300"
+                :style="{ width: `${audioProgress.percentage}%` }"
+              />
+            </div>
+          </div>
+          <p class="text-xs text-muted-foreground">
+            支持 MP3、WAV 等音频格式，最大 50MB
+          </p>
+        </div>
+
         <div class="grid gap-2">
           <UiLabel for="content_en">英文内容 <span class="text-red-500">*</span></UiLabel>
           <UiTextarea
@@ -176,8 +292,8 @@ function removeTag(index: number) {
         <UiButton variant="outline" @click="open = false">
           取消
         </UiButton>
-        <UiButton :disabled="isPending" @click="handleSubmit">
-          {{ isPending ? '创建中...' : '创建' }}
+        <UiButton :disabled="isPending || audioUploading" @click="handleSubmit">
+          {{ audioUploading ? '上传中...' : isPending ? '创建中...' : '创建' }}
         </UiButton>
       </UiDialogFooter>
     </UiDialogContent>

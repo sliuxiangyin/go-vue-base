@@ -1,8 +1,8 @@
 package learn_en
 
 import (
+	"databaseAi/internal/app/learn_en/business/lesson"
 	"databaseAi/internal/app/learn_en/business/test"
-	"databaseAi/internal/app/learn_en/repo"
 	"databaseAi/internal/infra/ai"
 	"databaseAi/internal/infra/config"
 	"databaseAi/internal/infra/database"
@@ -21,9 +21,11 @@ var ProviderLearnEnSet = wire.NewSet(
 	ProvideFileStorage,
 	// Shared Repo layer
 	sharedRepo.NewLessonRepo,
-	// Repo layer
-	repo.NewAudioRepo,
-	repo.NewSemanticRepo,
+	sharedRepo.NewAudioRepo,
+	sharedRepo.NewSemanticRepo,
+	// Lesson module
+	lesson.NewService,
+	lesson.NewHandler,
 	// Test module
 	test.NewRepo,
 	test.NewService,

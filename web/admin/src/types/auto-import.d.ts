@@ -68,11 +68,13 @@ declare global {
   const useAxios: typeof import('../composables/use-axios').useAxios
   const useCssModule: typeof import('vue').useCssModule
   const useCssVars: typeof import('vue').useCssVars
+  const useFileUpload: typeof import('../composables/use-file-upload').useFileUpload
   const useId: typeof import('vue').useId
   const useLink: typeof import('vue-router')['useLink']
   const useModel: typeof import('vue').useModel
   const useRoute: typeof import('vue-router').useRoute
   const useRouter: typeof import('vue-router').useRouter
+  const useServerEvents: typeof import('../composables/use-server-events').useServerEvents
   const useSidebar: typeof import('../composables/use-sidebar').useSidebar
   const useSlots: typeof import('vue').useSlots
   const useTemplateRef: typeof import('vue').useTemplateRef
@@ -88,6 +90,12 @@ declare global {
   // @ts-ignore
   export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, ShallowRef, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
+  // @ts-ignore
+  export type { UploadProgress, ChunkUploadResult } from '../composables/use-file-upload'
+  import('../composables/use-file-upload')
+  // @ts-ignore
+  export type { ServerEvent } from '../composables/use-server-events'
+  import('../composables/use-server-events')
   // @ts-ignore
   export type { Theme, Radius, ContentLayout } from '../constants/themes'
   import('../constants/themes')

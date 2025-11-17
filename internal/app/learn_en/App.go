@@ -1,6 +1,7 @@
 package learn_en
 
 import (
+	"databaseAi/internal/app/learn_en/business/lesson"
 	"databaseAi/internal/app/learn_en/business/test"
 	"databaseAi/internal/infra/config"
 	"databaseAi/internal/infra/database"
@@ -16,11 +17,14 @@ type App struct {
 func NewApp(
 	conf *config.Config,
 	db *database.DB,
+	lessonHandler *lesson.Handler,
 	testHandler *test.Handler) *App {
 	app := &App{
 		Config: conf,
 		DB:     db,
 	}
+	// 将 lesson handler 添加到 handlers 列表
+	app.AddHandler(lessonHandler)
 	// 将 test handler 添加到 handlers 列表
 	app.AddHandler(testHandler)
 	return app

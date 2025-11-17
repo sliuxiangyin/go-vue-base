@@ -2,36 +2,32 @@ package lesson
 
 import (
 	"databaseAi/internal/app/admin/business/rbac"
+	"databaseAi/internal/app/admin/queue"
 	"databaseAi/internal/shared/models"
 	"databaseAi/internal/shared/repo"
+	"databaseAi/internal/shared/task"
 )
 
 type Service struct {
 	lessonRepo   *repo.LessonRepo
 	phoneticRepo *repo.PhoneticDictionaryRepo
+	audioRepo    *repo.AudioRepo
 	rbacService  *rbac.Service // 用于权限检查
 }
 
-func NewService(lessonRepo *repo.LessonRepo, phoneticRepo *repo.PhoneticDictionaryRepo, rbacService *rbac.Service) *Service {
+func NewService(lessonRepo *repo.LessonRepo, phoneticRepo *repo.PhoneticDictionaryRepo, rbacService *rbac.Service, audioRepo *repo.AudioRepo) *Service {
 	return &Service{
 		lessonRepo:   lessonRepo,
 		phoneticRepo: phoneticRepo,
 		rbacService:  rbacService,
+		audioRepo:    audioRepo,
 	}
 }
 
 // CreateLesson 创建课程
 func (s *Service) CreateLesson(lesson *models.EnglishLesson) error {
 
-	//调用中文翻译
-
-	//如果有中文翻译 就不处理
-
-	//ContentEN 英文生成音频
-
 	//语义意群与时间戳匹配 处理
-
-	//
 
 	return s.lessonRepo.Create(lesson)
 }
@@ -47,12 +43,28 @@ func (s *Service) ListLessons(page, pageSize int, level *int8, isPublic *bool) (
 }
 
 // UpdateLesson 更新课程
-func (s *Service) UpdateLesson(lesson *models.EnglishLesson) error {
+func (s *Service) UpdateLesson(lesson *models.EnglishLesson, userID uint) error {
 	// 先查询确保课程存在
 	existing, err := s.lessonRepo.GetByID(lesson.ID)
 	if err != nil {
 		return err
 	}
+	err = task.GetEventBus().SubmitTask(task.SubmitTaskRequest{
+		Type:   queue.LessonTask,
+		UserID: userID,
+		Payload: map[string]interface{}{
+			"audio_url": lesson.AudioURL,
+			"user_id":   userID,
+			"id":        lesson.ID,
+		},
+		MaxParallel: 1,
+		Priority:    0,
+		MaxAttempts: 3,
+	})
+	if err != nil {
+		return err
+	}
+	//}
 
 	// 更新字段
 	existing.Title = lesson.Title
@@ -66,7 +78,12 @@ func (s *Service) UpdateLesson(lesson *models.EnglishLesson) error {
 	existing.Level = lesson.Level
 	existing.IsPublic = lesson.IsPublic
 
-	return s.lessonRepo.Update(existing)
+	err = s.lessonRepo.Update(existing)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // DeleteLesson 删除课程（软删除）

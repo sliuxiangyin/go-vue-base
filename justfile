@@ -15,7 +15,7 @@ wire:
 
 # 开发模式
 dev:
-	MODE=dev && go run main.go
+	go run -tags dev ./bin/main/
 
 # 构建前端
 build-web:
@@ -36,3 +36,6 @@ clean:
 install-web:
 	cd wen && pnpm install
 
+py-run:
+	cd ./python/learn_en && .venv/Scripts/activate.bat && .venv/Scripts/python.exe main.py
+	@echo "Python script executed"

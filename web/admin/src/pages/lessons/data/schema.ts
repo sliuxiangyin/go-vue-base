@@ -44,9 +44,10 @@ export type Lesson = z.infer<typeof lessonSchema>
 
 export const lessonListSchema = z.array(lessonSchema)
 
-// 创建/更新课程的表单数据（不包含 audio_url，后端生成）
+// 创建/更新课程的表单数据
 export const lessonFormSchema = z.object({
   title: z.string().min(1, '标题不能为空').max(255, '标题最多255个字符'),
+  audio_url: z.string().optional(), // 音频文件相对路径
   content_en: z.string().min(1, '英文内容不能为空'),
   content_zh: z.string().optional(),
   semantic_json: z.array(semanticChunkSchema).optional(),

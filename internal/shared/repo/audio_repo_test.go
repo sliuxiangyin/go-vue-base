@@ -22,7 +22,7 @@ func TestAudioRepo_Transcribe(t *testing.T) {
 	repo := NewAudioRepo(grpcFactory, cfg, fileStorage)
 
 	// 测试音频文件路径（需要先有一个测试音频文件）
-	audioPath := "d:/code/databaseAi/backend/python/learn_en/downloaded_audio.wav"
+	audioPath := "D:\\code\\databaseAi\\backend\\测试.mp3"
 
 	// 调用转录
 	result, err := repo.Transcribe(audioPath, "en", "small")

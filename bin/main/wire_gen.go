@@ -9,12 +9,13 @@ package main
 import (
 	"databaseAi/internal/app/admin"
 	"databaseAi/internal/app/admin/business/auth"
-	"databaseAi/internal/app/admin/business/lesson"
+	lesson2 "databaseAi/internal/app/admin/business/lesson"
 	"databaseAi/internal/app/admin/business/rbac"
+	"databaseAi/internal/app/admin/queue"
 	"databaseAi/internal/app/learn_en"
+	"databaseAi/internal/app/learn_en/business/lesson"
 	"databaseAi/internal/app/learn_en/business/test"
-	"databaseAi/internal/app/learn_en/repo"
-	repo2 "databaseAi/internal/shared/repo"
+	"databaseAi/internal/shared/repo"
 )
 
 // Injectors from wire.go:
@@ -26,15 +27,15 @@ func InitializeLearnEnService(buildEnv string) (*learn_en.App, error) {
 	if err != nil {
 		return nil, err
 	}
-	grpcFactory := learn_en.ProvideGrpc(config)
-	fileStorage := learn_en.ProvideFileStorage(config)
-	audioRepo := repo.NewAudioRepo(grpcFactory, config, fileStorage)
+	lessonRepo := repo.NewLessonRepo(db)
+	service := lesson.NewService(lessonRepo)
+	handler := lesson.NewHandler(service)
 	openai := learn_en.ProvideOpenai(config)
 	semanticRepo := repo.NewSemanticRepo(openai)
-	testRepo := test.NewRepo(db, config, audioRepo, semanticRepo)
-	service := test.NewService(testRepo)
-	handler := test.NewHandler(service)
-	app := learn_en.NewApp(config, db, handler)
+	testRepo := test.NewRepo(db, config, semanticRepo)
+	testService := test.NewService(testRepo)
+	testHandler := test.NewHandler(testService)
+	app := learn_en.NewApp(config, db, handler, testHandler)
 	return app, nil
 }
 
@@ -50,10 +51,22 @@ func InitializeAdminService(buildEnv string) (*admin.App, error) {
 	rbacRepo := rbac.NewRepo(db)
 	rbacService := rbac.NewService(rbacRepo)
 	rbacHandler := admin.ProvideRBACNewHandler(rbacService, service)
-	lessonRepo := repo2.NewLessonRepo(db)
-	phoneticDictionaryRepo := repo2.NewPhoneticDictionaryRepo(db)
-	lessonService := lesson.NewService(lessonRepo, phoneticDictionaryRepo, rbacService)
+	lessonRepo := repo.NewLessonRepo(db)
+	phoneticDictionaryRepo := repo.NewPhoneticDictionaryRepo(db)
+	grpcFactory := admin.ProvideGrpc(config)
+	fileStorage := admin.ProvideFileStorage(config)
+	audioRepo := repo.NewAudioRepo(grpcFactory, config, fileStorage)
+	lessonService := lesson2.NewService(lessonRepo, phoneticDictionaryRepo, rbacService, audioRepo)
 	lessonHandler := admin.ProvideLessonNewHandler(lessonService, service)
-	app := admin.NewApp(config, db, handler, rbacHandler, lessonHandler)
+	eventHandler := admin.ProvideEventNewHandler(service)
+	gormDB := admin.ProvideGormDB(db)
+	fileRepository := admin.ProvideFileRepository(gormDB)
+	sharedFileStorage := admin.ProvideLocalFileStorage(config)
+	fileService := admin.ProvideFileNewService(fileRepository, sharedFileStorage)
+	fileHandler := admin.ProvideFileNewHandler(fileService, service)
+	openai := admin.ProvideOpenai(config)
+	semanticRepo := repo.NewSemanticRepo(openai)
+	lessonExecutor := queue.NewLessonExecutor(lessonRepo, audioRepo, semanticRepo)
+	app := admin.NewApp(config, db, handler, rbacHandler, lessonHandler, eventHandler, fileHandler, lessonExecutor)
 	return app, nil
 }
